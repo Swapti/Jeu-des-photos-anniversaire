@@ -91,7 +91,7 @@ const imagePaths = [
 "Sabri 2024 Vdef.JPEG"
 ];
 
-const correctOrder = [...imagePaths];
+const correctOrder = [...imagePaths].map(name => name.toLowerCase().replace(/\s+/g, ''));
 const shuffled = [...imagePaths].sort(() => 0.5 - Math.random());
 const container = document.getElementById("images");
 let firstSelected = null;
@@ -112,7 +112,7 @@ div.classList.add("selected");
 firstSelected.classList.remove("selected");
 firstSelected = null;
 } else {
-// Échanger les images
+// Swap images
 const img1 = firstSelected.querySelector("img").src;
 const img2 = div.querySelector("img").src;
 firstSelected.querySelector("img").src = img2;
@@ -132,18 +132,18 @@ container.appendChild(createImageElement(src));
 });
 }
 
+function getFileName(src) {
+return src.split("/").pop().toLowerCase().replace(/\s+/g, '');
+}
+
 function checkOrder() {
 const currentOrder = [...container.children].map(div =>
-div.querySelector("img").src.split("/").pop().toLowerCase().replace(/\s+/g, "")
-);
-
-const correct = correctOrder.map(name =>
-name.toLowerCase().replace(/\s+/g, "")
+getFileName(div.querySelector("img").src)
 );
 
 const resultDiv = document.getElementById("result");
 
-if (JSON.stringify(currentOrder) === JSON.stringify(correct)) {
+if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
 resultDiv.textContent = "Gagné !";
 resultDiv.className = "success";
 } else {
