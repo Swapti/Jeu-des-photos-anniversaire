@@ -91,7 +91,7 @@ const imagePaths = [
 "Sabri 2024 Vdef.JPEG"
 ];
 
-const correctOrder = [...imagePaths].map(name => name.toLowerCase().replace(/\s+/g, ''));
+const correctOrder = [...imagePaths];
 const shuffled = [...imagePaths].sort(() => 0.5 - Math.random());
 const container = document.getElementById("images");
 let firstSelected = null;
@@ -102,6 +102,8 @@ div.className = "image-container";
 
 const img = document.createElement("img");
 img.src = src;
+img.setAttribute("data-name", src); // Ajoute le nom réel ici
+
 div.appendChild(img);
 
 div.addEventListener("click", () => {
@@ -112,11 +114,19 @@ div.classList.add("selected");
 firstSelected.classList.remove("selected");
 firstSelected = null;
 } else {
-// Swap images
-const img1 = firstSelected.querySelector("img").src;
-const img2 = div.querySelector("img").src;
-firstSelected.querySelector("img").src = img2;
-div.querySelector("img").src = img1;
+// Swap des sources
+const img1 = firstSelected.querySelector("img");
+const img2 = div.querySelector("img");
+
+// Échange des src
+const tempSrc = img1.src;
+const tempName = img1.getAttribute("data-name");
+
+img1.src = img2.src;
+img1.setAttribute("data-name", img2.getAttribute("data-name"));
+
+img2.src = tempSrc;
+img2.setAttribute("data-name", tempName);
 
 firstSelected.classList.remove("selected");
 firstSelected = null;
@@ -132,13 +142,9 @@ container.appendChild(createImageElement(src));
 });
 }
 
-function getFileName(src) {
-return src.split("/").pop().toLowerCase().replace(/\s+/g, '');
-}
-
 function checkOrder() {
 const currentOrder = [...container.children].map(div =>
-getFileName(div.querySelector("img").src)
+div.querySelector("img").getAttribute("data-name")
 );
 
 const resultDiv = document.getElementById("result");
