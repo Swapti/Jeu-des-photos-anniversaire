@@ -91,21 +91,23 @@ const imagePaths = [
 "Sabri 2024 Vdef.JPEG"
 ];
 
-const correctOrder = [...imagePaths];
-const shuffled = [...imagePaths].sort(() => 0.5 - Math.random());
+const correctOrder = [...imagePaths]; // L'ordre des images chronologique
+const shuffled = [...imagePaths].sort(() => 0.5 - Math.random()); // Mélanger les images au départ
 const container = document.getElementById("images");
-let firstSelected = null;
+let firstSelected = null; // Premier élément sélectionné pour échange
 
+// Créer l'élément image
 function createImageElement(src) {
 const div = document.createElement("div");
 div.className = "image-container";
 
 const img = document.createElement("img");
 img.src = src;
-img.setAttribute("data-name", src); // Ajoute le nom réel ici
+img.setAttribute("data-name", src); // Attribut personnalisé avec le nom de fichier
 
 div.appendChild(img);
 
+// Gestion du clic sur l'image
 div.addEventListener("click", () => {
 if (firstSelected === null) {
 firstSelected = div;
@@ -114,11 +116,11 @@ div.classList.add("selected");
 firstSelected.classList.remove("selected");
 firstSelected = null;
 } else {
-// Swap des sources
+// Échanger les images
 const img1 = firstSelected.querySelector("img");
 const img2 = div.querySelector("img");
 
-// Échange des src
+// Échanger les src et data-name
 const tempSrc = img1.src;
 const tempName = img1.getAttribute("data-name");
 
@@ -136,13 +138,16 @@ firstSelected = null;
 return div;
 }
 
+// Charger les images dans le conteneur
 function loadImages() {
 shuffled.forEach(src => {
 container.appendChild(createImageElement(src));
 });
 }
 
+// Vérifier si l'ordre est correct
 function checkOrder() {
+// Créer un tableau avec les noms des fichiers actuels
 const currentOrder = [...container.children].map(div =>
 div.querySelector("img").getAttribute("data-name")
 );
@@ -150,14 +155,15 @@ div.querySelector("img").getAttribute("data-name")
 const resultDiv = document.getElementById("result");
 
 if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
-resultDiv.textContent = "Gagné !";
-resultDiv.className = "success";
+resultDiv.textContent = "Gagné !"; // Si l'ordre est correct
+resultDiv.className = "success"; // Afficher en vert
 } else {
-resultDiv.textContent = "Ce n'est pas encore bon. Essaie encore.";
-resultDiv.className = "error";
+resultDiv.textContent = "Ce n'est pas encore bon. Essaie encore."; // Si l'ordre est incorrect
+resultDiv.className = "error"; // Afficher en rouge
 }
 }
 
+// Initialisation du jeu
 loadImages();
 </script>
 
