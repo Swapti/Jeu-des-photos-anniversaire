@@ -2,12 +2,13 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<title>Classement d'images</title>
+<title>Classement d'images - Mobile Friendly</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
 font-family: sans-serif;
 text-align: center;
-margin: 20px;
+margin: 10px;
 }
 
 #images {
@@ -18,18 +19,21 @@ justify-content: center;
 }
 
 .image-container {
-width: 120px;
-height: 120px;
-cursor: move;
+width: 30vw;
+height: 30vw;
+max-width: 120px;
+max-height: 120px;
 border: 2px solid #ccc;
 overflow: hidden;
 display: flex;
 align-items: center;
 justify-content: center;
+position: relative;
+cursor: pointer;
 }
 
-.image-container.dragging {
-opacity: 0.5;
+.image-container.selected {
+border: 3px solid #007bff;
 }
 
 .image-container img {
@@ -40,15 +44,22 @@ object-fit: cover;
 
 #result {
 margin-top: 20px;
-font-size: 2em;
-font-weight: bold;
-padding: 15px;
-border-radius: 10px;
+font-size: 1.5em;
+padding: 10px;
 display: inline-block;
+border-radius: 10px;
+}
+
+.success {
 background-color: #d4edda;
 color: #155724;
 border: 2px solid #c3e6cb;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+background-color: #f8d7da;
+color: #721c24;
+border: 2px solid #f5c6cb;
 }
 
 button {
@@ -83,41 +94,32 @@ const imagePaths = [
 const correctOrder = [...imagePaths];
 const shuffled = [...imagePaths].sort(() => 0.5 - Math.random());
 const container = document.getElementById("images");
-let draggedElement = null;
+let firstSelected = null;
 
 function createImageElement(src) {
 const div = document.createElement("div");
 div.className = "image-container";
-div.draggable = true;
 
 const img = document.createElement("img");
 img.src = src;
 div.appendChild(img);
 
-div.addEventListener("dragstart", () => {
-draggedElement = div;
-div.classList.add("dragging");
-});
-
-div.addEventListener("dragend", () => {
-draggedElement = null;
-div.classList.remove("dragging");
-});
-
-div.addEventListener("dragover", (e) => {
-e.preventDefault();
-});
-
-div.addEventListener("drop", (e) => {
-e.preventDefault();
-if (draggedElement && draggedElement !== div) {
-const draggedIndex = [...container.children].indexOf(draggedElement);
-const targetIndex = [...container.children].indexOf(div);
-if (draggedIndex < targetIndex) {
-container.insertBefore(draggedElement, div.nextSibling);
+div.addEventListener("click", () => {
+if (firstSelected === null) {
+firstSelected = div;
+div.classList.add("selected");
+} else if (firstSelected === div) {
+firstSelected.classList.remove("selected");
+firstSelected = null;
 } else {
-container.insertBefore(draggedElement, div);
-}
+// Swap images
+const img1 = firstSelected.querySelector("img").src;
+const img2 = div.querySelector("img").src;
+firstSelected.querySelector("img").src = img2;
+div.querySelector("img").src = img1;
+
+firstSelected.classList.remove("selected");
+firstSelected = null;
 }
 });
 
@@ -131,25 +133,18 @@ container.appendChild(createImageElement(src));
 }
 
 function checkOrder() {
-const currentOrder = [...container.children].map(div => {
-const full = div.querySelector("img").src;
-return decodeURIComponent(full.substring(full.lastIndexOf("/") + 1));
-});
-
-const resultBox = document.getElementById("result");
+const currentOrder = [...container.children].map(div => div.querySelector("img").src.split("/").pop());
+const resultDiv = document.getElementById("result");
 
 if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
-resultBox.textContent = "Gagné !";
-resultBox.style.backgroundColor = "#d4edda"; // vert clair
-resultBox.style.color = "#155724"; // vert foncé
-resultBox.style.border = "2px solid #c3e6cb"; // bordure verte
+resultDiv.textContent = "Gagné !";
+resultDiv.className = "success";
 } else {
-resultBox.textContent = "Ce n'est pas encore bon. Essaie encore.";
-resultBox.style.backgroundColor = "#f8d7da"; // rouge clair
-resultBox.style.color = "#721c24"; // rouge foncé
-resultBox.style.border = "2px solid #f5c6cb"; // bordure rouge
+resultDiv.textContent = "Ce n'est pas encore bon. Essaie encore.";
+resultDiv.className = "error";
 }
 }
+
 loadImages();
 </script>
 
