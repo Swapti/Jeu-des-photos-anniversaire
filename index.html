@@ -112,7 +112,7 @@ div.classList.add("selected");
 firstSelected.classList.remove("selected");
 firstSelected = null;
 } else {
-// Swap images
+// Échanger les images
 const img1 = firstSelected.querySelector("img").src;
 const img2 = div.querySelector("img").src;
 firstSelected.querySelector("img").src = img2;
@@ -133,10 +133,17 @@ container.appendChild(createImageElement(src));
 }
 
 function checkOrder() {
-const currentOrder = [...container.children].map(div => div.querySelector("img").src.split("/").pop());
+const currentOrder = [...container.children].map(div =>
+div.querySelector("img").src.split("/").pop().toLowerCase().replace(/\s+/g, "")
+);
+
+const correct = correctOrder.map(name =>
+name.toLowerCase().replace(/\s+/g, "")
+);
+
 const resultDiv = document.getElementById("result");
 
-if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+if (JSON.stringify(currentOrder) === JSON.stringify(correct)) {
 resultDiv.textContent = "Gagné !";
 resultDiv.className = "success";
 } else {
